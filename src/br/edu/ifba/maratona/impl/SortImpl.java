@@ -5,6 +5,17 @@ import java.util.List;
 
 import br.edu.ifba.maratona.sort.Sort;
 
+/**
+ * classe que executa a ordenação dos corredores a das distancias percorridas.
+ * 
+ * o algoritmo foi adaptado a partir do que se encontra disponibilizado em:
+ * https://www.delftstack.com/howto/java/merge-sort-arraylist-java/
+ * 
+ * A complexidade, como se trata de um algoritimo de MergeSort, é de O(NlogN) pois
+ * Ele divide a lista em duas metades, classifica cada metade de forma independente e, 
+ * em seguida, mescla as duas metades ordenadas em uma única lista ordenada.
+ */
+
 public class SortImpl extends Sort<Distance> {
 
     public SortImpl(List<Distance> totalDistances) {

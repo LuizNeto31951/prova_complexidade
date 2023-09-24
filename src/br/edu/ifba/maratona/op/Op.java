@@ -3,6 +3,11 @@ package br.edu.ifba.maratona.op;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * classe que determina as operações que vão ser realizadas no programa
+ * a complexidade e constante O(1), pois não existe nenhum loop nem nada do tipo.
+ */
+
 public interface Op<People, Sensor> {
 
     // d.1

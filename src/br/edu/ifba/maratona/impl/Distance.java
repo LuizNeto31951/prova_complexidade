@@ -1,5 +1,12 @@
 package br.edu.ifba.maratona.impl;
 
+/**
+ * classe para simular a distancia percorrida tanto no minuto quanto no total de um corredor.
+ * a complexidade e constante O(1) pois não possui nenhum loop nem
+ * nada que problematize a execução dos metodos.
+ */
+
+
 public class Distance {
 
     Integer id = 0;

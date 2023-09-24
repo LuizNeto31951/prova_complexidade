@@ -1,5 +1,12 @@
 package br.edu.ifba.maratona.impl;
 
+
+/**
+ * classe para simular um corredor da maratona
+ * a complexidade e constante O(1) pois não possui nenhum loop nem
+ * nada que problematize a execução dos metodos.
+ */
+
 public class Runner implements Comparable<Runner> {
 
     private String id;

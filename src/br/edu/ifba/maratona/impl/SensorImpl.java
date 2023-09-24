@@ -11,6 +11,12 @@ public class SensorImpl implements Sensor<Distance> {
     private static final int AVARAGE_SPEED = 352;
     private static final int MAX_OSCILATION = 25;
 
+    /**
+     * gerador da corrida de cada maratonista,
+     * A complexidade é linarO(N),porque tem um loop do/while
+     * que continua até o maratonista terminar a corrida.
+     */
+
     @Override
     public List<Distance> createRun(int marathonLenght) {
         List<Distance> distanceChart = new ArrayList<>();
