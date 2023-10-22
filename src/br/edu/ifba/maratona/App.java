@@ -3,54 +3,88 @@ package br.edu.ifba.maratona;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import br.edu.ifba.maratona.impl.Distance;
-import br.edu.ifba.maratona.impl.OpImpl;
-import br.edu.ifba.maratona.impl.Runner;
-import br.edu.ifba.maratona.impl.SensorImpl;
-import br.edu.ifba.maratona.op.Op;
-import br.edu.ifba.maratona.sensor.Sensor;
+import com.github.javafaker.Faker;
+
+import java.util.Map.Entry;
+
+import br.edu.ifba.maratona.borda.impl.RunnerRanking;
+import br.edu.ifba.maratona.borda.impl.SensorImpl;
+import br.edu.ifba.maratona.models.Runner;
+import br.edu.ifba.maratona.nuvem.impl.ExecutorImpl;
 
 public class App {
 
     private static final int CONTESTANTS = 10;
-    private static final int MARATHON_LENGHT = 5000;
+    private static final int MARATHON_LENGHT = 10000;
 
-    /**
-     * complexidade linear, O(N), porque tem um for que depende
-     * do total de corredores na maratona.
-     */
-    public static void main(String[] args) throws Exception {
-        Op<Runner, Distance> operations = new OpImpl();
-        Sensor<Distance> sensor = new SensorImpl();
-        Map<Runner, List<Distance>> distanceRunnedPerRunner = new HashMap<>();
+    private static List<Thread> executors = new ArrayList<>();
+    private static Map<Runner, SensorImpl> runners = new HashMap<>();
 
+    // BigO: O(n) - Linear Time
+    // O tempo de execução é diretamente proporcional ao número de entradas.
+    public static void initiallize(Map<Runner, SensorImpl> runners) {
+
+        for (Entry<Runner, SensorImpl> item : runners.entrySet()) {
+            Runner runner = item.getKey();
+            SensorImpl sensors = item.getValue();
+
+            Thread executor = new Thread(new ExecutorImpl(runner, sensors, MARATHON_LENGHT));
+            executors.add(executor);
+            executor.start();
+
+        }
+    }
+
+    // BigO: O(n) - Linear Time
+    // O tempo de execução é diretamente proporcional ao número de executores.
+    public static void Wait() throws InterruptedException {
+        for (Thread executor : executors) {
+            executor.join();
+        }
+    }
+
+    // BigO: O(n) - Linear Time
+    // O tempo de execução é diretamente proporcional ao número de corredores.
+    public static Map<Runner, SensorImpl> createRunners() {
+        Faker faker = new Faker(Locale.forLanguageTag("pt-BR"));
         for (int i = 0; i < CONTESTANTS; i++) {
-            String id = (i + 1) + "";
-            distanceRunnedPerRunner.put(new Runner(id, "Runner #" + id), sensor.createRun(MARATHON_LENGHT));
+            Runner runner = new Runner(faker.code().ean13(), faker.name().fullName());
+            runners.put(runner, new SensorImpl());
         }
+        return runners;
+    }
 
-        // d.1
-        // operations.print(new ArrayList<Runner>(distanceRunnedPerRunner.keySet()));
+    // BigO: O(n + NlogN) - Linear Time
+    // O tempo de execução é diretamente proporcional ao número de corredores. Porem
+    // o metodo rank.act é NlogN.
+    public static void createRanking() {
+        List<Runner> rankRunners = new ArrayList<>();
+        int i = 1;
 
-        // d.2
-        // operations.print(distanceRunnedPerRunner);
-
-        // d.3
-        Map<Runner, List<Distance>> sortedDistances = operations.sort(distanceRunnedPerRunner);
-        operations.print(sortedDistances);
-
-        // d.4
-        List<Distance> records = new ArrayList<>();
-        records.add(new Distance(400, false));
-        records.add(new Distance(435, true));
-
-        boolean newRecord = operations.recordCheck(sortedDistances, records);
-        if (newRecord) {
-            System.out.println("Congrats!!!");
-        } else {
-            System.out.println("No records set !");
+        for (Entry<Runner, SensorImpl> item : runners.entrySet()) {
+            Runner runner = item.getKey();
+            rankRunners.add(runner);
         }
+        RunnerRanking rank = new RunnerRanking();
+        for (Runner runner : rank.act(rankRunners)) {
+            System.out.println(i + "º Colocado : " + runner);
+            i++;
+        }
+    }
+
+    // BigO: O(n) - Linear Time
+    // O tempo de execução é diretamente proporcional ao número de corredores.
+    public static void main(String[] args) throws Exception {
+        Map<Runner, SensorImpl> runners = createRunners();
+
+        System.out.println("INITIALIZING");
+        initiallize(runners);
+        Wait();
+        System.out.println("EVERYONE COMPLETED THE MARATHON");
+        createRanking();
+
     }
 }
